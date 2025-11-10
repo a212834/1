@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>框子流转管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary: #4b6cb7;
+            --secondary: #182848;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --light: #f5f7fa;
+            --dark: #2c3e50;
+            --gray: #7f8c8d;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+            font-size: 15px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        /* 顶部导航 */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .app-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .app-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .app-title i {
+            font-size: 24px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .user-role {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 10px;
+            border-radius: 8px;
+            text-align: center;
+            flex: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        /* 标签页导航 */
+        .tab-navigation {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+        
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 表单样式 */
+        .form-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eaeaea;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #444;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a5aa3;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .btn-group .btn {
+            width: auto;
+            flex: 1;
+        }
+        
+        /* 记录卡片样式 */
+        .record-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .customer-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--dark);
+        }
+        
+        .box-count {
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .record-details {
+            margin-bottom: 10px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .detail-label {
+            color: var(--gray);
+            width: 100px;
+            flex-shrink: 0;
+        }
+        
+        .detail-value {
+            color: var(--dark);
+            flex: 1;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-out {
+            background: #ffeaa7;
+            color: #e17055;
+        }
+        
+        .status-in {
+            background: #a3e4d7;
+            color: #16a085;
+        }
+        
+        .record-note {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .note-label {
+            color: var(--gray);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .record-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            background: #f8f9fa;
+            color: var(--dark);
+            margin-left: 8px;
+        }
+        
+        .action-btn.delete {
+            color: var(--danger);
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        /* 筛选器 */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            padding: 10px 15px;
+            border-top: 1px solid #eee;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            color: var(--gray);
+            font-size: 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        
+        .nav-btn.active {
+            color: var(--primary);
+        }
+        
+        .nav-btn i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        /* 响应式调整 */
+        .main-content {
+            padding-bottom: 70px; /* 为底部导航留出空间 */
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--gray);
+            cursor: pointer;
+        }
+        
+        /* 登录页面 */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark);
+        }
+        
+        .login-title i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .role-selection {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .role-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .role-btn.active {
+            border-color: var(--primary);
+            background: #f0f4ff;
+        }
+        
+        .employee-select {
+            margin-bottom: 20px;
+        }
+        
+        /* 员工统计 */
+        .employee-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .employee-stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .employee-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+        
+        .employee-stat-label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* 隐藏元素 */
+        .admin-only {
+            display: none;
+        }
+        
+        .admin-mode .admin-only {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录页面 -->
+    <div class="login-container" id="loginPage">
+        <div class="login-card">
+            <div class="login-title">
+                <i class="fas fa-boxes"></i>
+                <h1>框子流转系统</h1>
+                <p>请选择您的身份</p>
+            </div>
+            
+            <div class="role-selection">
+                <button class="role-btn active" id="employeeRoleBtn">
+                    <i class="fas fa-user"></i>
+                    <div>员工</div>
+                </button>
+                <button class="role-btn" id="adminRoleBtn">
+                    <i class="fas fa-user-shield"></i>
+                    <div>管理员</div>
+                </button>
+            </div>
+            
+            <div class="form-group" id="employeeSelectGroup">
+                <label for="employeeSelect">选择您的身份</label>
+                <select id="employeeSelect">
+                    <option value="">-- 请选择员工 --</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="adminLoginGroup" style="display: none;">
+                <label for="adminPassword">管理员密码</label>
+                <input type="password" id="adminPassword" placeholder="请输入管理员密码">
+            </div>
+            
+            <button class="btn btn-primary" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i>
+                登录系统
+            </button>
+        </div>
+    </div>
+
+    <!-- 主应用 -->
+    <div class="container" id="appContainer" style="display: none;">
+        <header class="app-header">
+            <div class="app-title">
+                <h1><i class="fas fa-boxes"></i> 框子流转系统</h1>
+                <div class="user-info">
+                    <span id="currentUserName">员工</span>
+                    <span class="user-role" id="currentUserRole">员工</span>
+                    <i class="fas fa-cog" id="settingsBtn"></i>
+                </div>
+            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <span class="stat-value" id="totalCustomers">0</span>
+                    <span class="stat-label">总客户</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="totalRecords">0</span>
+                    <span class="stat-label">总记录</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="activeRecords">0</span>
+                    <span class="stat-label">未归还</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="operations">
+                <i class="fas fa-exchange-alt"></i> 流转操作
+            </button>
+            <button class="tab-button" data-tab="records">
+                <i class="fas fa-history"></i> 流转记录
+            </button>
+            <button class="tab-button admin-only" data-tab="customers">
+                <i class="fas fa-users"></i> 客户管理
+            </button>
+            <button class="tab-button admin-only" data-tab="employees">
+                <i class="fas fa-id-card"></i> 员工管理
+            </button>
+            <button class="tab-button" data-tab="stats">
+                <i class="fas fa-chart-bar"></i> 数据统计
+            </button>
+        </div>
+        
+        <div class="main-content">
+            <!-- 流转操作标签页 -->
+            <div class="tab-content active" id="operations-tab">
+                <div class="form-section admin-only">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus"></i>
+                        添加新客户
+                    </h2>
+                    <div class="form-group">
+                        <label for="customerName">客户名称</label>
+                        <input type="text" id="customerName" placeholder="输入客户名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerContact">联系方式</label>
+                        <input type="text" id="customerContact" placeholder="输入联系电话">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerNote">客户备注</label>
+                        <textarea id="customerNote" placeholder="输入客户相关备注信息"></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="addCustomerBtn">
+                        <i class="fas fa-plus"></i>
+                        添加客户
+                    </button>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        框子流转操作
+                    </h2>
+                    <div class="form-group">
+                        <label for="customerSelect">选择客户</label>
+                        <select id="customerSelect">
+                            <option value="">-- 请选择客户 --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="boxCount">框子数量</label>
+                        <input type="number" id="boxCount" min="1" value="1" placeholder="输入框子数量">
+                    </div>
+                    <div class="form-group">
+                        <label for="operationNote">操作备注</label>
+                        <textarea id="operationNote" placeholder="输入本次操作的备注信息"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" id="takeOutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            客户取出
+                        </button>
+                        <button class="btn btn-danger" id="returnBtn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            客户退回
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 流转记录标签页 -->
+            <div class="tab-content" id="records-tab">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="filterCustomer">按客户筛选</label>
+                        <select id="filterCustomer">
+                            <option value="">全部客户</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterStatus">按状态筛选</label>
+                        <select id="filterStatus">
+                            <option value="">全部状态</option>
+                            <option value="out">未归还</option>
+                            <option value="in">已归还</option>
+                        </select>
+                    </div>
+                    <div class="filter-group admin-only">
+                        <label for="filterEmployee">按员工筛选</label>
+                        <select id="filterEmployee">
+                            <option value="">全部员工</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="recordsContainer">
+                    <!-- 记录卡片将通过JavaScript动态添加 -->
+                </div>
+                
+                <div id="emptyRecordsState" class="empty-state" style="display: none;">
+                    <i class="fas fa-inbox"></i>
+                    <h3>暂无流转记录</h3>
+                    <p>添加客户并记录框子流转信息后，记录将显示在这里</p>
+                </div>
+            </div>
+            
+            <!-- 客户管理标签页 -->
+            <div class="tab-content" id="customers-tab">
+                <div id="customersContainer">
+                    <!-- 客户卡片将通过JavaScript动态添加 -->
+                </div>
+                
+                <div id="emptyCustomersState" class="empty-state" style="display: none;">
+                    <i class="fas fa-users"></i>
+                    <h3>暂无客户信息</h3>
+                    <p>点击"添加客户"按钮创建第一个客户</p>
+                </div>
+            </div>
+            
+            <!-- 员工管理标签页 -->
+            <div class="tab-content" id="employees-tab">
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-plus"></i>
+                        添加新员工
+                    </h2>
+                    <div class="form-group">
+                        <label for="employeeName">员工姓名</label>
+                        <input type="text" id="employeeName" placeholder="输入员工姓名">
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeContact">联系方式</label>
+                        <input type="text" id="employeeContact" placeholder="输入联系电话">
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeNote">员工备注</label>
+                        <textarea id="employeeNote" placeholder="输入员工相关备注信息"></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="addEmployeeBtn">
+                        <i class="fas fa-plus"></i>
+                        添加员工
+                    </button>
+                </div>
+                
+                <div id="employeesContainer">
+                    <!-- 员工卡片将通过JavaScript动态添加 -->
+                </div>
+                
+                <div id="emptyEmployeesState" class="empty-state" style="display: none;">
+                    <i class="fas fa-users"></i>
+                    <h3>暂无员工信息</h3>
+                    <p>点击"添加员工"按钮创建第一个员工</p>
+                </div>
+            </div>
+            
+            <!-- 数据统计标签页 -->
+            <div class="tab-content" id="stats-tab">
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-pie"></i>
+                        总体统计
+                    </h2>
+                    <div class="employee-stats">
+                        <div class="employee-stat-card">
+                            <span class="employee-stat-value" id="totalOutBoxes">0</span>
+                            <span class="employee-stat-label">总送出框子</span>
+                        </div>
+                        <div class="employee-stat-card">
+                            <span class="employee-stat-value" id="totalInBoxes">0</span>
+                            <span class="employee-stat-label">总收回框子</span>
+                        </div>
+                        <div class="employee-stat-card">
+                            <span class="employee-stat-value" id="activeBoxes">0</span>
+                            <span class="employee-stat-label">未归还框子</span>
+                        </div>
+                        <div class="employee-stat-card">
+                            <span class="employee-stat-value" id="completionRate">0%</span>
+                            <span class="employee-stat-label">归还完成率</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-chart"></i>
+                        员工统计
+                    </h2>
+                    <div id="employeeStatsContainer">
+                        <!-- 员工统计卡片将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+                
+                <div class="form-section admin-only">
+                    <h2 class="section-title">
+                        <i class="fas fa-download"></i>
+                        数据导出
+                    </h2>
+                    <button class="btn btn-primary" id="exportDataBtn">
+                        <i class="fas fa-file-export"></i>
+                        导出所有数据
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-tab="operations">
+                <i class="fas fa-exchange-alt"></i>
+                <span>流转操作</span>
+            </button>
+            <button class="nav-btn" data-tab="records">
+                <i class="fas fa-history"></i>
+                <span>流转记录</span>
+            </button>
+            <button class="nav-btn admin-only" data-tab="customers">
+                <i class="fas fa-users"></i>
+                <span>客户管理</span>
+            </button>
+            <button class="nav-btn admin-only" data-tab="employees">
+                <i class="fas fa-id-card"></i>
+                <span>员工管理</span>
+            </button>
+            <button class="nav-btn" data-tab="stats">
+                <i class="fas fa-chart-bar"></i>
+                <span>数据统计</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">系统设置</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label>数据管理</label>
+                <button class="btn btn-danger" id="clearDataBtn">
+                    <i class="fas fa-trash"></i> 清除所有数据
+                </button>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-warning" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> 退出登录
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据存储
+        let customers = JSON.parse(localStorage.getItem('boxCustomers')) || [];
+        let employees = JSON.parse(localStorage.getItem('boxEmployees')) || [];
+        let records = JSON.parse(localStorage.getItem('boxRecords')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        const ADMIN_PASSWORD = "admin123"; // 管理员密码
+        
+        // 初始化默认数据（如果没有员工数据）
+        if (employees.length === 0) {
+            employees = [
+                { id: "1", name: "张三", contact: "13800138001", note: "老员工", createdAt: new Date().toISOString() },
+                { id: "2", name: "李四", contact: "13800138002", note: "新员工", createdAt: new Date().toISOString() },
+                { id: "3", name: "王五", contact: "13800138003", note: "兼职员工", createdAt: new Date().toISOString() }
+            ];
+            localStorage.setItem('boxEmployees', JSON.stringify(employees));
+        }
+        
+        // DOM 元素
+        const loginPage = document.getElementById('loginPage');
+        const appContainer = document.getElementById('appContainer');
+        const employeeRoleBtn = document.getElementById('employeeRoleBtn');
+        const adminRoleBtn = document.getElementById('adminRoleBtn');
+        const employeeSelectGroup = document.getElementById('employeeSelectGroup');
+        const adminLoginGroup = document.getElementById('adminLoginGroup');
+        const employeeSelect = document.getElementById('employeeSelect');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        const customerNameInput = document.getElementById('customerName');
+        const customerContactInput = document.getElementById('customerContact');
+        const customerNoteInput = document.getElementById('customerNote');
+        const customerSelect = document.getElementById('customerSelect');
+        const boxCountInput = document.getElementById('boxCount');
+        const operationNoteInput = document.getElementById('operationNote');
+        const addCustomerBtn = document.getElementById('addCustomerBtn');
+        const takeOutBtn = document.getElementById('takeOutBtn');
+        const returnBtn = document.getElementById('returnBtn');
+        
+        const employeeNameInput = document.getElementById('employeeName');
+        const employeeContactInput = document.getElementById('employeeContact');
+        const employeeNoteInput = document.getElementById('employeeNote');
+        const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+        
+        const filterCustomer = document.getElementById('filterCustomer');
+        const filterStatus = document.getElementById('filterStatus');
+        const filterEmployee = document.getElementById('filterEmployee');
+        const recordsContainer = document.getElementById('recordsContainer');
+        const customersContainer = document.getElementById('customersContainer');
+        const employeesContainer = document.getElementById('employeesContainer');
+        const employeeStatsContainer = document.getElementById('employeeStatsContainer');
+        const emptyRecordsState = document.getElementById('emptyRecordsState');
+        const emptyCustomersState = document.getElementById('emptyCustomersState');
+        const emptyEmployeesState = document.getElementById('emptyEmployeesState');
+        
+        const totalCustomersEl = document.getElementById('totalCustomers');
+        const totalRecordsEl = document.getElementById('totalRecords');
+        const activeRecordsEl = document.getElementById('activeRecords');
+        const totalOutBoxesEl = document.getElementById('totalOutBoxes');
+        const totalInBoxesEl = document.getElementById('totalInBoxes');
+        const activeBoxesEl = document.getElementById('activeBoxes');
+        const completionRateEl = document.getElementById('completionRate');
+        
+        const currentUserName = document.getElementById('currentUserName');
+        const currentUserRole = document.getElementById('currentUserRole');
+        
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeModal = document.querySelector('.close-modal');
+        const clearDataBtn = document.getElementById('clearDataBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        
+        // 标签页和导航
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const navButtons = document.querySelectorAll('.nav-btn');
+        
+        // 初始化
+        function init() {
+            // 检查是否已登录
+            if (currentUser) {
+                showApp();
+            } else {
+                showLogin();
+            }
+            
+            // 初始化员工选择下拉框
+            updateEmployeeSelect();
+            
+            // 事件监听
+            employeeRoleBtn.addEventListener('click', () => switchRole('employee'));
+            adminRoleBtn.addEventListener('click', () => switchRole('admin'));
+            loginBtn.addEventListener('click', login);
+            
+            addCustomerBtn.addEventListener('click', addCustomer);
+            takeOutBtn.addEventListener('click', takeOutBoxes);
+            returnBtn.addEventListener('click', returnBoxes);
+            
+            addEmployeeBtn.addEventListener('click', addEmployee);
+            
+            filterCustomer.addEventListener('change', renderRecords);
+            filterStatus.addEventListener('change', renderRecords);
+            filterEmployee.addEventListener('change', renderRecords);
+            
+            // 标签页切换
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // 底部导航切换
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    switchTab(tabId);
+                    
+                    // 更新底部导航状态
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                });
+            });
+            
+            // 设置模态框
+            settingsBtn.addEventListener('click', () => {
+                settingsModal.classList.add('active');
+            });
+            
+            closeModal.addEventListener('click', () => {
+                settingsModal.classList.remove('active');
+            });
+            
+            clearDataBtn.addEventListener('click', clearAllData);
+            logoutBtn.addEventListener('click', logout);
+            exportDataBtn.addEventListener('click', exportData);
+            
+            // 点击模态框外部关闭
+            settingsModal.addEventListener('click', (e) => {
+                if (e.target === settingsModal) {
+                    settingsModal.classList.remove('active');
+                }
+            });
+        }
+        
+        // 显示登录页面
+        function showLogin() {
+            loginPage.style.display = 'flex';
+            appContainer.style.display = 'none';
+        }
+        
+        // 显示应用主界面
+        function showApp() {
+            loginPage.style.display = 'none';
+            appContainer.style.display = 'block';
+            
+            // 根据用户角色更新界面
+            if (currentUser.role === 'admin') {
+                document.body.classList.add('admin-mode');
+                currentUserRole.textContent = '管理员';
+            } else {
+                document.body.classList.remove('admin-mode');
+                currentUserRole.textContent = '员工';
+            }
+            
+            currentUserName.textContent = currentUser.name;
+            
+            updateCustomerSelect();
+            updateFilterCustomer();
+            updateFilterEmployee();
+            updateStats();
+            renderRecords();
+            renderCustomers();
+            renderEmployees();
+            renderEmployeeStats();
+        }
+        
+        // 切换角色（员工/管理员）
+        function switchRole(role) {
+            if (role === 'employee') {
+                employeeRoleBtn.classList.add('active');
+                adminRoleBtn.classList.remove('active');
+                employeeSelectGroup.style.display = 'block';
+                adminLoginGroup.style.display = 'none';
+            } else {
+                employeeRoleBtn.classList.remove('active');
+                adminRoleBtn.classList.add('active');
+                employeeSelectGroup.style.display = 'none';
+                adminLoginGroup.style.display = 'block';
+            }
+        }
+        
+        // 登录
+        function login() {
+            if (employeeRoleBtn.classList.contains('active')) {
+                // 员工登录
+                const employeeId = employeeSelect.value;
+                if (!employeeId) {
+                    alert('请选择您的身份');
+                    return;
+                }
+                
+                const employee = employees.find(e => e.id === employeeId);
+                currentUser = {
+                    id: employee.id,
+                    name: employee.name,
+                    role: 'employee'
+                };
+            } else {
+                // 管理员登录
+                const password = adminPassword.value;
+                if (password !== ADMIN_PASSWORD) {
+                    alert('管理员密码错误');
+                    return;
+                }
+                
+                currentUser = {
+                    id: 'admin',
+                    name: '管理员',
+                    role: 'admin'
+                };
+            }
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showApp();
+        }
+        
+        // 退出登录
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            settingsModal.classList.remove('active');
+            showLogin();
+        }
+        
+        // 切换标签页
+        function switchTab(tabId) {
+            // 更新标签页按钮状态
+            tabButtons.forEach(button => {
+                if (button.getAttribute('data-tab') === tabId) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            
+            // 更新标签页内容
+            tabContents.forEach(content => {
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+            
+            // 如果是统计页面，更新统计信息
+            if (tabId === 'stats') {
+                renderEmployeeStats();
+            }
+        }
+        
+        // 添加客户
+        function addCustomer() {
+            const name = customerNameInput.value.trim();
+            const contact = customerContactInput.value.trim();
+            const note = customerNoteInput.value.trim();
+            
+            if (!name) {
+                alert('请输入客户名称');
+                return;
+            }
+            
+            const newCustomer = {
+                id: Date.now().toString(),
+                name,
+                contact,
+                note,
+                createdAt: new Date().toISOString()
+            };
+            
+            customers.push(newCustomer);
+            saveCustomers();
+            
+            // 清空表单
+            customerNameInput.value = '';
+            customerContactInput.value = '';
+            customerNoteInput.value = '';
+            
+            updateCustomerSelect();
+            updateFilterCustomer();
+            updateStats();
+            renderCustomers();
+            
+            alert('客户添加成功！');
+        }
+        
+        // 客户取出框子
+        function takeOutBoxes() {
+            const customerId = customerSelect.value;
+            const count = parseInt(boxCountInput.value);
+            const note = operationNoteInput.value.trim();
+            
+            if (!customerId) {
+                alert('请选择客户');
+                return;
+            }
+            
+            if (!count || count < 1) {
+                alert('请输入有效的框子数量');
+                return;
+            }
+            
+            const customer = customers.find(c => c.id === customerId);
+            
+            const newRecord = {
+                id: Date.now().toString(),
+                customerId,
+                customerName: customer.name,
+                boxCount: count,
+                outEmployeeId: currentUser.id,
+                outEmployeeName: currentUser.name,
+                inEmployeeId: null,
+                inEmployeeName: null,
+                takenAt: new Date().toISOString(),
+                returnedAt: null,
+                note,
+                returnNote: null,
+                status: 'out'
+            };
+            
+            records.push(newRecord);
+            saveRecords();
+            
+            // 清空表单
+            operationNoteInput.value = '';
+            
+            updateStats();
+            renderRecords();
+            
+            alert(`已记录 ${customer.name} 取出 ${count} 个框子`);
+        }
+        
+        // 客户退回框子
+        function returnBoxes() {
+            const customerId = customerSelect.value;
+            const note = operationNoteInput.value.trim();
+            
+            if (!customerId) {
+                alert('请选择客户');
+                return;
+            }
+            
+            // 查找该客户未归还的记录
+            const customerRecords = records.filter(r => 
+                r.customerId === customerId && r.status === 'out'
+            );
+            
+            if (customerRecords.length === 0) {
+                alert('该客户没有未归还的框子记录');
+                return;
+            }
+            
+            // 如果有多个未归还记录，让用户选择
+            if (customerRecords.length > 1) {
+                // 简化处理：默认归还最早的记录
+                customerRecords.sort((a, b) => new Date(a.takenAt) - new Date(b.takenAt));
+            }
+            
+            // 更新最早的未归还记录为已归还
+            const record = customerRecords[0];
+            record.returnedAt = new Date().toISOString();
+            record.status = 'in';
+            record.returnNote = note;
+            record.inEmployeeId = currentUser.id;
+            record.inEmployeeName = currentUser.name;
+            
+            saveRecords();
+            
+            // 清空表单
+            operationNoteInput.value = '';
+            
+            updateStats();
+            renderRecords();
+            
+            alert(`框子归还记录已更新，归还了 ${record.boxCount} 个框子`);
+        }
+        
+        // 添加员工
+        function addEmployee() {
+            const name = employeeNameInput.value.trim();
+            const contact = employeeContactInput.value.trim();
+            const note = employeeNoteInput.value.trim();
+            
+            if (!name) {
+                alert('请输入员工姓名');
+                return;
+            }
+            
+            const newEmployee = {
+                id: Date.now().toString(),
+                name,
+                contact,
+                note,
+                createdAt: new Date().toISOString()
+            };
+            
+            employees.push(newEmployee);
+            saveEmployees();
+            
+            // 清空表单
+            employeeNameInput.value = '';
+            employeeContactInput.value = '';
+            employeeNoteInput.value = '';
+            
+            updateEmployeeSelect();
+            updateFilterEmployee();
+            renderEmployees();
+            
+            alert('员工添加成功！');
+        }
+        
+        // 更新客户选择下拉框
+        function updateCustomerSelect() {
+            customerSelect.innerHTML = '<option value="">-- 请选择客户 --</option>';
+            filterCustomer.innerHTML = '<option value="">全部客户</option>';
+            
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = customer.name;
+                customerSelect.appendChild(option);
+                
+                const filterOption = document.createElement('option');
+                filterOption.value = customer.id;
+                filterOption.textContent = customer.name;
+                filterCustomer.appendChild(filterOption);
+            });
+        }
+        
+        // 更新员工选择下拉框
+        function updateEmployeeSelect() {
+            employeeSelect.innerHTML = '<option value="">-- 请选择员工 --</option>';
+            
+            employees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.id;
+                option.textContent = employee.name;
+                employeeSelect.appendChild(option);
+            });
+        }
+        
+        // 更新员工筛选下拉框
+        function updateFilterEmployee() {
+            filterEmployee.innerHTML = '<option value="">全部员工</option>';
+            
+            employees.forEach(employee => {
+                const option = document.createElement('option');
+                option.value = employee.id;
+                option.textContent = employee.name;
+                filterEmployee.appendChild(option);
+            });
+        }
+        
+        // 渲染记录卡片
+        function renderRecords() {
+            const customerFilter = filterCustomer.value;
+            const statusFilter = filterStatus.value;
+            const employeeFilter = filterEmployee.value;
+            
+            let filteredRecords = records;
+            
+            if (customerFilter) {
+                filteredRecords = filteredRecords.filter(r => r.customerId === customerFilter);
+            }
+            
+            if (statusFilter) {
+                filteredRecords = filteredRecords.filter(r => r.status === statusFilter);
+            }
+            
+            if (employeeFilter) {
+                filteredRecords = filteredRecords.filter(r => 
+                    r.outEmployeeId === employeeFilter || r.inEmployeeId === employeeFilter
+                );
+            }
+            
+            // 按时间倒序排列
+            filteredRecords.sort((a, b) => new Date(b.takenAt) - new Date(a.takenAt));
+            
+            if (filteredRecords.length === 0) {
+                recordsContainer.innerHTML = '';
+                emptyRecordsState.style.display = 'block';
+                return;
+            }
+            
+            emptyRecordsState.style.display = 'none';
+            
+            recordsContainer.innerHTML = filteredRecords.map(record => {
+                const takenDate = new Date(record.takenAt).toLocaleString();
+                const returnedDate = record.returnedAt ? 
+                    new Date(record.returnedAt).toLocaleString() : '-';
+                
+                const statusBadge = record.status === 'out' ? 
+                    '<span class="status-badge status-out">未归还</span>' : 
+                    '<span class="status-badge status-in">已归还</span>';
+                
+                return `
+                    <div class="record-card">
+                        <div class="record-header">
+                            <div class="customer-name">${record.customerName}</div>
+                            <div class="box-count">${record.boxCount} 个</div>
+                        </div>
+                        <div class="record-details">
+                            <div class="detail-row">
+                                <div class="detail-label">取出时间:</div>
+                                <div class="detail-value">${takenDate}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">取出员工:</div>
+                                <div class="detail-value">${record.outEmployeeName}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">退回时间:</div>
+                                <div class="detail-value">${returnedDate}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">退回员工:</div>
+                                <div class="detail-value">${record.inEmployeeName || '-'}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">状态:</div>
+                                <div class="detail-value">${statusBadge}</div>
+                            </div>
+                        </div>
+                        ${record.note ? `
+                            <div class="record-note">
+                                <div class="note-label">取出备注:</div>
+                                <div>${record.note}</div>
+                            </div>
+                        ` : ''}
+                        ${record.returnNote ? `
+                            <div class="record-note">
+                                <div class="note-label">退回备注:</div>
+                                <div>${record.returnNote}</div>
+                            </div>
+                        ` : ''}
+                        <div class="record-actions admin-only">
+                            <button class="action-btn delete" onclick="deleteRecord('${record.id}')">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 渲染客户卡片
+        function renderCustomers() {
+            if (customers.length === 0) {
+                customersContainer.innerHTML = '';
+                emptyCustomersState.style.display = 'block';
+                return;
+            }
+            
+            emptyCustomersState.style.display = 'none';
+            
+            customersContainer.innerHTML = customers.map(customer => {
+                const customerRecords = records.filter(r => r.customerId === customer.id);
+                const activeRecords = customerRecords.filter(r => r.status === 'out').length;
+                const totalBoxes = customerRecords.reduce((sum, r) => sum + r.boxCount, 0);
+                const activeBoxes = customerRecords
+                    .filter(r => r.status === 'out')
+                    .reduce((sum, r) => sum + r.boxCount, 0);
+                
+                return `
+                    <div class="record-card">
+                        <div class="record-header">
+                            <div class="customer-name">${customer.name}</div>
+                            <div class="box-count">${activeBoxes} 未归</div>
+                        </div>
+                        <div class="record-details">
+                            <div class="detail-row">
+                                <div class="detail-label">联系方式:</div>
+                                <div class="detail-value">${customer.contact || '-'}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">总记录:</div>
+                                <div class="detail-value">${customerRecords.length} 次</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">总框子:</div>
+                                <div class="detail-value">${totalBoxes} 个</div>
+                            </div>
+                        </div>
+                        ${customer.note ? `
+                            <div class="record-note">
+                                <div class="note-label">客户备注:</div>
+                                <div>${customer.note}</div>
+                            </div>
+                        ` : ''}
+                        <div class="record-actions">
+                            <button class="action-btn delete" onclick="deleteCustomer('${customer.id}')">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 渲染员工卡片
+        function renderEmployees() {
+            if (employees.length === 0) {
+                employeesContainer.innerHTML = '';
+                emptyEmployeesState.style.display = 'block';
+                return;
+            }
+            
+            emptyEmployeesState.style.display = 'none';
+            
+            employeesContainer.innerHTML = employees.map(employee => {
+                const outRecords = records.filter(r => r.outEmployeeId === employee.id);
+                const inRecords = records.filter(r => r.inEmployeeId === employee.id);
+                
+                const outBoxes = outRecords.reduce((sum, r) => sum + r.boxCount, 0);
+                const inBoxes = inRecords.reduce((sum, r) => sum + r.boxCount, 0);
+                const activeBoxes = outRecords
+                    .filter(r => r.status === 'out')
+                    .reduce((sum, r) => sum + r.boxCount, 0);
+                
+                return `
+                    <div class="record-card">
+                        <div class="record-header">
+                            <div class="customer-name">${employee.name}</div>
+                            <div class="box-count">${activeBoxes} 未归</div>
+                        </div>
+                        <div class="record-details">
+                            <div class="detail-row">
+                                <div class="detail-label">联系方式:</div>
+                                <div class="detail-value">${employee.contact || '-'}</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">送出框子:</div>
+                                <div class="detail-value">${outBoxes} 个</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">收回框子:</div>
+                                <div class="detail-value">${inBoxes} 个</div>
+                            </div>
+                        </div>
+                        ${employee.note ? `
+                            <div class="record-note">
+                                <div class="note-label">员工备注:</div>
+                                <div>${employee.note}</div>
+                            </div>
+                        ` : ''}
+                        <div class="record-actions">
+                            <button class="action-btn delete" onclick="deleteEmployee('${employee.id}')">
+                                <i class="fas fa-trash"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 渲染员工统计
+        function renderEmployeeStats() {
+            // 计算总体统计
+            const totalOutBoxes = records.reduce((sum, r) => sum + r.boxCount, 0);
+            const totalInBoxes = records
+                .filter(r => r.status === 'in')
+                .reduce((sum, r) => sum + r.boxCount, 0);
+            const activeBoxes = totalOutBoxes - totalInBoxes;
+            const completionRate = totalOutBoxes > 0 ? 
+                Math.round((totalInBoxes / totalOutBoxes) * 100) : 0;
+            
+            totalOutBoxesEl.textContent = totalOutBoxes;
+            totalInBoxesEl.textContent = totalInBoxes;
+            activeBoxesEl.textContent = activeBoxes;
+            completionRateEl.textContent = `${completionRate}%`;
+            
+            // 渲染员工统计
+            employeeStatsContainer.innerHTML = employees.map(employee => {
+                const outRecords = records.filter(r => r.outEmployeeId === employee.id);
+                const inRecords = records.filter(r => r.inEmployeeId === employee.id);
+                
+                const outBoxes = outRecords.reduce((sum, r) => sum + r.boxCount, 0);
+                const inBoxes = inRecords.reduce((sum, r) => sum + r.boxCount, 0);
+                const activeBoxes = outRecords
+                    .filter(r => r.status === 'out')
+                    .reduce((sum, r) => sum + r.boxCount, 0);
+                
+                const completionRate = outBoxes > 0 ? 
+                    Math.round((inBoxes / outBoxes) * 100) : 0;
+                
+                return `
+                    <div class="record-card">
+                        <div class="record-header">
+                            <div class="customer-name">${employee.name}</div>
+                            <div class="box-count">${activeBoxes} 未归</div>
+                        </div>
+                        <div class="record-details">
+                            <div class="detail-row">
+                                <div class="detail-label">送出框子:</div>
+                                <div class="detail-value">${outBoxes} 个</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">收回框子:</div>
+                                <div class="detail-value">${inBoxes} 个</div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-label">归还率:</div>
+                                <div class="detail-value">${completionRate}%</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 删除记录
+        function deleteRecord(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                records = records.filter(r => r.id !== id);
+                saveRecords();
+                updateStats();
+                renderRecords();
+            }
+        }
+        
+        // 删除客户
+        function deleteCustomer(id) {
+            if (confirm('确定要删除这个客户吗？相关的流转记录也将被删除。')) {
+                // 删除客户
+                customers = customers.filter(c => c.id !== id);
+                saveCustomers();
+                
+                // 删除相关记录
+                records = records.filter(r => r.customerId !== id);
+                saveRecords();
+                
+                updateCustomerSelect();
+                updateFilterCustomer();
+                updateStats();
+                renderCustomers();
+                renderRecords();
+            }
+        }
+        
+        // 删除员工
+        function deleteEmployee(id) {
+            if (confirm('确定要删除这个员工吗？')) {
+                // 不能删除当前登录的员工
+                if (currentUser.id === id) {
+                    alert('不能删除当前登录的员工');
+                    return;
+                }
+                
+                // 检查是否有相关记录
+                const hasRecords = records.some(r => 
+                    r.outEmployeeId === id || r.inEmployeeId === id
+                );
+                
+                if (hasRecords) {
+                    alert('该员工有相关的流转记录，不能删除');
+                    return;
+                }
+                
+                employees = employees.filter(e => e.id !== id);
+                saveEmployees();
+                
+                updateEmployeeSelect();
+                updateFilterEmployee();
+                renderEmployees();
+            }
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            totalCustomersEl.textContent = customers.length;
+            totalRecordsEl.textContent = records.length;
+            activeRecordsEl.textContent = records.filter(r => r.status === 'out').length;
+        }
+        
+        // 清除所有数据
+        function clearAllData() {
+            if (confirm('确定要清除所有数据吗？此操作不可恢复！')) {
+                customers = [];
+                employees = [];
+                records = [];
+                saveCustomers();
+                saveEmployees();
+                saveRecords();
+                updateCustomerSelect();
+                updateFilterCustomer();
+                updateEmployeeSelect();
+                updateFilterEmployee();
+                updateStats();
+                renderRecords();
+                renderCustomers();
+                renderEmployees();
+                settingsModal.classList.remove('active');
+                alert('所有数据已清除');
+            }
+        }
+        
+        // 导出数据
+        function exportData() {
+            const data = {
+                customers,
+                employees,
+                records,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `框子流转数据_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('数据导出成功');
+        }
+        
+        // 保存客户数据到本地存储
+        function saveCustomers() {
+            localStorage.setItem('boxCustomers', JSON.stringify(customers));
+        }
+        
+        // 保存员工数据到本地存储
+        function saveEmployees() {
+            localStorage.setItem('boxEmployees', JSON.stringify(employees));
+        }
+        
+        // 保存记录数据到本地存储
+        function saveRecords() {
+            localStorage.setItem('boxRecords', JSON.stringify(records));
+        }
+        
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>
